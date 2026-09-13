@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Albarán de transporte</title>
+<style>
+  :root {
+    --navy: #16324f;
+    --navy-dark: #0e2138;
+    --steel: #4a6785;
+    --paper: #fbfaf7;
+    --line: #d8d3c8;
+    --ink: #1f2a33;
+    --amber: #c8791f;
+    --ok-bg: #eef3ee;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #e9e6de;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    padding: 32px 16px;
+  }
+
+  #sheet {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    box-shadow: 0 2px 14px rgba(20, 30, 40, 0.12);
+  }
+
+  header {
+    background: var(--navy);
+    background-image: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+    color: #fff;
+    padding: 28px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  header .doc-meta {
+    text-align: right;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #cfd9e3;
+  }
+
+  header .doc-meta input {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-size: 13px;
+    width: 130px;
+  }
+
+  header .doc-meta label { color: #a9bccf; margin-right: 4px; }
+
+  section {
+    padding: 22px 36px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  section h2 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--steel);
+    margin: 0 0 14px 0;
+    font-weight: 700;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 28px;
+  }
+
+  .grid.tri { grid-template-columns: repeat(3, 1fr); }
+
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--steel);
+    margin-bottom: 4px;
+  }
+
+  .field input, .field textarea {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    background: transparent;
+    font-size: 15px;
+    padding: 5px 2px;
+    color: var(--ink);
+    font-family: inherit;
+  }
+
+  .field input:focus, .field textarea:focus {
+    outline: none;
+    border-bottom-color: var(--amber);
+  }
+
+  .field textarea { resize: vertical; min-height: 40px; }
+
+  .route {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .route .arrow {
+    text-align: center;
+    color: var(--steel);
+    font-size: 20px;
+  }
+
+  table.cargo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+  }
+
+  table.cargo th {
+    text-align: left;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--steel);
+    border-bottom: 2px solid var(--navy);
+    padding: 6px 8px;
+  }
+
+  table.cargo td {
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  table.cargo input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    padding: 5px 2px;
+    font-family: inherit;
+    color: var(--ink);
+  }
+
+  table.cargo input:focus { outline: none; background: #fff8ea; }
+
+  table.cargo td.qty input { text-align: center; }
+
+  table.cargo td.remove {
+    text-align: center;
+    width: 30px;
+  }
+
+  table.cargo td.remove button {
+    background: none;
+    border: none;
+    color: #a33;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  #addRow {
+    margin-top: 10px;
+    background: none;
+    border: 1px dashed var(--steel);
+    color: var(--steel);
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  #addRow:hover { border-color: var(--amber); color: var(--amber); }
+
+  .actions {
+    padding: 24px 36px 32px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .actions button {
+    padding: 11px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+  }
+
+  #btnPrint {
+    background: #fff;
+    color: var(--navy);
+    border: 1.5px solid var(--navy) !important;
+  }
+  #btnPrint:hover { background: #f0efe9; }
+
+  #btnPdf {
+    background: var(--navy);
+    color: #fff;
+  }
+  #btnPdf:hover { background: var(--navy-dark); }
+
+  .signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding-top: 10px;
+  }
+
+  .sig-box {
+    border-top: 1px solid var(--ink);
+    padding-top: 6px;
+    font-size: 12.5px;
+    color: var(--steel);
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .grid, .grid.tri { grid-template-columns: 1fr; }
+    header { flex-direction: column; }
+    header .doc-meta { text-align: left; }
+    .route { grid-template-columns: 1fr; }
+    .route .arrow { transform: rotate(90deg); }
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    #sheet { box-shadow: none; border: none; max-width: none; }
+    #addRow, .actions, table.cargo td.remove { display: none !important; }
+    .field input, .field textarea, table.cargo input { border-bottom-color: #999; }
+    section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sheet">
+  <header>
+    <h1>Albarán</h1>
+    <div class="doc-meta">
+      <div><label>Nº</label><input type="text" id="docNum" placeholder="A-0001"></div>
+      <div style="margin-top:6px;"><label>Fecha</label><input type="date" id="docFecha"></div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Datos de la empresa</h2>
+    <div class="grid">
+      <div class="field"><label>Nombre / Razón social</label><input type="text" id="empNombre"></div>
+      <div class="field"><label>CIF / NIF</label><input type="text" id="empCif"></div>
+      <div class="field"><label>Dirección</label><input type="text" id="empDireccion"></div>
+      <div class="field"><label>Teléfono / Email</label><input type="text" id="empContacto"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ruta</h2>
+    <div class="route">
+      <div class="field"><label>Dirección de partida</label><textarea id="direccionPartida" rows="2"></textarea></div>
+      <div class="arrow">→</div>
+      <div class="field"><label>Dirección de destino</label><textarea id="direccionDestino" rows="2"></textarea></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Datos del camión</h2>
+    <div class="grid tri">
+      <div class="field"><label>Chofer</label><input type="text" id="chofer"></div>
+      <div class="field"><label>Matrícula camión</label><input type="text" id="matriculaCamion"></div>
+      <div class="field"><label>Matrícula remolque</label><input type="text" id="matriculaRemolque"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Carga</h2>
+    <table class="cargo" id="cargoTable">
+      <thead>
+        <tr>
+          <th style="width:80px;">Cant.</th>
+          <th>Módulo / concepto</th>
+          <th>Observaciones</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="cargoBody">
+        <tr>
+          <td class="qty"><input type="text" value="1"></td>
+          <td><input type="text" placeholder="Ej. Módulo Terra TE224"></td>
+          <td><input type="text" placeholder=""></td>
+          <td class="remove"><button onclick="removeRow(this)">✕</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="addRow" onclick="addRow()">+ Añadir línea</button>
+  </section>
+
+  <section style="border-bottom:none;">
+    <h2>Firmas</h2>
+    <div class="signatures">
+      <div class="sig-box">Entrega (chofer)</div>
+      <div class="sig-box">Recibe (destino)</div>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button id="btnPrint" onclick="window.print()">Imprimir</button>
+    <button id="btnPdf" onclick="generarPDF()">Descargar PDF (A4)</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  document.getElementById('docFecha').valueAsDate = new Date();
+
+  function addRow() {
+    const tbody = document.getElementById('cargoBody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="qty"><input type="text" value="1"></td>
+      <td><input type="text" placeholder="Ej. Módulo Oporto OP123"></td>
+      <td><input type="text" placeholder=""></td>
+      <td class="remove"><button onclick="removeRow(this)">✕</button></td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  function removeRow(btn) {
+    const tbody = document.getElementById('cargoBody');
+    if (tbody.rows.length > 1) {
+      btn.closest('tr').remove();
+    }
+  }
+
+  function val(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function generarPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const margenIzq = 15;
+    const margenDer = 195; // 210 - 15
+    let y = 20;
+
+    // --- Encabezado ---
+    doc.setFontSize(20);
+    doc.setFont(undefined, 'bold');
+    doc.text('Albarán', margenIzq, y);
+
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    const docNum = val('docNum') || '—';
+    const fecha = val('docFecha') || '—';
+    doc.text(`Nº: ${docNum}`, margenDer, y - 5, { align: 'right' });
+    doc.text(`Fecha: ${fecha}`, margenDer, y, { align: 'right' });
+
+    y += 6;
+    doc.setLineWidth(0.4);
+    doc.line(margenIzq, y, margenDer, y);
+    y += 8;
+
+    // --- Datos de la empresa ---
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('DATOS DE LA EMPRESA', margenIzq, y);
+    y += 5;
+    doc.setFontSize(11);
+    doc.setTextColor(20, 25, 30);
+    doc.setFont(undefined, 'bold');
+    doc.text(val('empNombre') || '-', margenIzq, y);
+    doc.setFont(undefined, 'normal');
+    y += 5;
+    doc.setFontSize(10);
+    doc.text(`CIF/NIF: ${val('empCif') || '-'}`, margenIzq, y);
+    y += 5;
+    doc.text(val('empDireccion') || '-', margenIzq, y);
+    y += 5;
+    doc.text(val('empContacto') || '-', margenIzq, y);
+    y += 9;
+
+    // --- Ruta ---
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('DIRECCIÓN DE PARTIDA', margenIzq, y);
+    doc.text('DIRECCIÓN DE DESTINO', 110, y);
+    y += 5;
+    doc.setFontSize(10);
+    doc.setTextColor(20, 25, 30);
+    const partida = doc.splitTextToSize(val('direccionPartida') || '-', 85);
+    const destino = doc.splitTextToSize(val('direccionDestino') || '-', 85);
+    doc.text(partida, margenIzq, y);
+    doc.text(destino, 110, y);
+    y += Math.max(partida.length, destino.length) * 5 + 6;
+
+    doc.setLineWidth(0.2);
+    doc.line(margenIzq, y, margenDer, y);
+    y += 8;
+
+    // --- Datos del camión ---
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('CHOFER', margenIzq, y);
+    doc.text('MATRÍCULA CAMIÓN', 85, y);
+    doc.text('MATRÍCULA REMOLQUE', 145, y);
+    y += 5;
+    doc.setFontSize(10.5);
+    doc.setTextColor(20, 25, 30);
+    doc.text(val('chofer') || '-', margenIzq, y);
+    doc.text(val('matriculaCamion') || '-', 85, y);
+    doc.text(val('matriculaRemolque') || '-', 145, y);
+    y += 9;
+
+    doc.setLineWidth(0.2);
+    doc.line(margenIzq, y, margenDer, y);
+    y += 8;
+
+    // --- Carga (tabla) ---
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('CANT.', margenIzq, y);
+    doc.text('MÓDULO / CONCEPTO', margenIzq + 18, y);
+    doc.text('OBSERVACIONES', 130, y);
+    y += 2;
+    doc.setLineWidth(0.3);
+    doc.line(margenIzq, y, margenDer, y);
+    y += 6;
+
+    doc.setFontSize(10.5);
+    doc.setTextColor(20, 25, 30);
+    doc.setFont(undefined, 'normal');
+
+    const filas = document.querySelectorAll('#cargoBody tr');
+    filas.forEach((fila) => {
+      const inputs = fila.querySelectorAll('input');
+      const cantidad = inputs[0].value.trim() || '-';
+      const concepto = inputs[1].value.trim();
+      const obs = inputs[2].value.trim();
+
+      if (!concepto && !obs) return; // omite filas vacías
+
+      doc.text(cantidad, margenIzq, y);
+      doc.text(concepto || '-', margenIzq + 18, y);
+      doc.text(obs || '-', 130, y);
+      y += 7;
+
+      if (y > 260) {
+        doc.addPage();
+        y = 20;
+      }
+    });
+
+    y += 8;
+    if (y > 250) { doc.addPage(); y = 20; }
+
+    // --- Firmas ---
+    doc.setLineWidth(0.2);
+    doc.line(margenIzq, y + 20, 90, y + 20);
+    doc.line(120, y + 20, margenDer, y + 20);
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('Entrega (chofer)', margenIzq, y + 25);
+    doc.text('Recibe (destino)', 120, y + 25);
+
+    const nombreArchivo = `albaran-${docNum !== '—' ? docNum : 'sin-numero'}.pdf`;
+    doc.save(nombreArchivo);
+  }
+</script>
+
+</body>
+</html>
