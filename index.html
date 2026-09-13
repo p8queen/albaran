@@ -326,7 +326,7 @@
 
   <div class="actions">
     <button id="btnPrint" onclick="window.print()">Imprimir</button>
-    <button id="btnPdf" onclick="generarPDF()">Descargar PDF (A4)</button>
+    <button id="btnPdf" onclick="generarPDF()">PDF / Compartir</button>
   </div>
 </div>
 
@@ -357,7 +357,7 @@
     return document.getElementById(id).value.trim();
   }
 
-  function generarPDF() {
+  async function generarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
@@ -485,7 +485,28 @@
     doc.text('Recibe (destino)', 120, y + 25);
 
     const nombreArchivo = `albaran-${docNum !== '—' ? docNum : 'sin-numero'}.pdf`;
-    doc.save(nombreArchivo);
+
+    // Intenta compartir (WhatsApp, email, etc). Si el navegador no lo soporta,
+    // descarga el archivo normalmente.
+    const blob = doc.output('blob');
+    const file = new File([blob], nombreArchivo, { type: 'application/pdf' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: 'Albarán',
+          text: `Albarán ${docNum !== '—' ? docNum : ''}`.trim()
+        });
+      } catch (err) {
+        // el usuario canceló el diálogo de compartir: no hacemos nada más
+        if (err.name !== 'AbortError') {
+          doc.save(nombreArchivo);
+        }
+      }
+    } else {
+      doc.save(nombreArchivo);
+    }
   }
 </script>
 
