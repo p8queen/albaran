@@ -221,7 +221,13 @@
     color: #fff;
   }
   #btnPdf:hover { background: var(--navy-dark); }
-
+ 
+  #logoutBtn {
+    background: #fff;
+    color: var(--navy);
+    border: 1.5px solid var(--navy) !important;
+  }
+    #logoutBtn:hover { background: #f0efe9; }
   .signatures {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -300,7 +306,6 @@
         <tr>
           <th style="width:80px;">Cant.</th>
           <th>Módulo / concepto</th>
-          <th>Observaciones</th>
           <th></th>
         </tr>
       </thead>
@@ -308,7 +313,6 @@
         <tr>
           <td class="qty"><input type="text" value="1"></td>
           <td><input type="text" placeholder="Ej. Módulo Terra TE224"></td>
-          <td><input type="text" placeholder=""></td>
           <td class="remove"><button onclick="removeRow(this)">✕</button></td>
         </tr>
       </tbody>
@@ -340,7 +344,6 @@
     row.innerHTML = `
       <td class="qty"><input type="text" value="1"></td>
       <td><input type="text" placeholder="Ej. Módulo Oporto OP123"></td>
-      <td><input type="text" placeholder=""></td>
       <td class="remove"><button onclick="removeRow(this)">✕</button></td>
     `;
     tbody.appendChild(row);
@@ -442,7 +445,6 @@
     doc.setTextColor(90, 100, 110);
     doc.text('CANT.', margenIzq, y);
     doc.text('MÓDULO / CONCEPTO', margenIzq + 18, y);
-    doc.text('OBSERVACIONES', 130, y);
     y += 2;
     doc.setLineWidth(0.3);
     doc.line(margenIzq, y, margenDer, y);
@@ -457,9 +459,8 @@
       const inputs = fila.querySelectorAll('input');
       const cantidad = inputs[0].value.trim() || '-';
       const concepto = inputs[1].value.trim();
-      const obs = inputs[2].value.trim();
 
-      if (!concepto && !obs) return; // omite filas vacías
+      if (!concepto) return; // omite filas vacías
 
       doc.text(cantidad, margenIzq, y);
       doc.text(concepto || '-', margenIzq + 18, y);
@@ -510,5 +511,23 @@
   }
 </script>
 
+
+<div id="app" class="hidden actions">
+  <header>
+    <div class="user-info">
+      <img id="userPhoto" src="" alt="">
+      <span id="userName"></span>
+    </div>
+    <button id="logoutBtn">Cerrar sesión</button>
+  </header>
+
+  
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="index-login.js"></script>
 </body>
 </html>
