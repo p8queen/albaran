@@ -526,16 +526,14 @@
     doc.text('DATOS DE LA CARGA', margenIzq, y);
     y += 6;
 
-    const evento = val('eventoTitulo');
-    if (evento) {
-      doc.setFontSize(10.5);
-      doc.setTextColor(20, 25, 30);
-      doc.setFont(undefined, 'bold');
-      const eventoLines = doc.splitTextToSize(evento, margenDer - margenIzq);
-      doc.text(eventoLines, margenIzq, y);
-      doc.setFont(undefined, 'normal');
-      y += eventoLines.length * 5 + 3;
-    }
+    const evento = 'ALBARÁN DE CARGA DE MATERIAL: evento OPEN MADRID 2026';
+    doc.setFontSize(10.5);
+    doc.setTextColor(20, 25, 30);
+    doc.setFont(undefined, 'bold');
+    const eventoLines = doc.splitTextToSize(evento, margenDer - margenIzq);
+    doc.text(eventoLines, margenIzq, y);
+    doc.setFont(undefined, 'normal');
+    y += eventoLines.length * 5 + 3;
 
     doc.setFontSize(10.5);
     doc.setTextColor(20, 25, 30);
