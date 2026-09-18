@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Albarán de transporte</title>
+<title>Albarán de carga</title>
 <style>
   :root {
     --navy: #16324f;
@@ -35,41 +35,107 @@
   }
 
   header {
-    background: var(--navy);
-    background-image: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
-    color: #fff;
-    padding: 28px 36px;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 26px 36px 20px;
+    border-bottom: 2px solid var(--navy);
+  }
+
+  .header-top {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 24px;
   }
 
+  .letterhead {
+    font-size: 11px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  .letterhead strong {
+    display: block;
+    font-size: 12.5px;
+    margin-bottom: 2px;
+  }
+
+  .logo-block {
+    text-align: center;
+    padding-top: 2px;
+  }
+
+  .logo-block .logo-text {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--navy);
+  }
+
+  .logo-block .logo-text span { color: var(--amber); }
+
+  .logo-block .tagline {
+    font-size: 9.5px;
+    letter-spacing: 0.6px;
+    color: var(--steel);
+    margin-top: 2px;
+  }
+
+  .header-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-top: 20px;
+  }
+
+  .client-block { font-size: 13px; line-height: 1.55; }
+
+  .client-block .num-cliente {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--steel);
+    margin-bottom: 2px;
+  }
+
+  .client-block strong { font-size: 14px; }
+
   header h1 {
     margin: 0;
-    font-size: 34px;
-    font-weight: 700;
+    font-size: 32px;
+    font-weight: 800;
     letter-spacing: 0.5px;
+    color: var(--navy);
+    text-align: right;
   }
 
   header .doc-meta {
     text-align: right;
     font-size: 13px;
-    line-height: 1.6;
-    color: #cfd9e3;
+    line-height: 1.7;
+    color: var(--steel);
+    margin-top: 8px;
   }
 
   header .doc-meta input {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.25);
-    color: #fff;
-    border-radius: 3px;
-    padding: 3px 6px;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    color: var(--ink);
+    border-radius: 0;
+    padding: 3px 2px;
     font-size: 13px;
-    width: 130px;
+    width: 110px;
+    text-align: right;
   }
 
-  header .doc-meta label { color: #a9bccf; margin-right: 4px; }
+  header .doc-meta input:focus {
+    outline: none;
+    border-bottom-color: var(--amber);
+  }
+
+  header .doc-meta label { color: var(--steel); margin-right: 4px; }
 
   section {
     padding: 22px 36px;
@@ -90,8 +156,6 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 14px 28px;
   }
-
-  .grid.tri { grid-template-columns: repeat(3, 1fr); }
 
   .field label {
     display: block;
@@ -118,17 +182,11 @@
 
   .field textarea { resize: vertical; min-height: 40px; }
 
-  .route {
-    display: grid;
-    grid-template-columns: 1fr 40px 1fr;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .route .arrow {
-    text-align: center;
-    color: var(--steel);
-    font-size: 20px;
+  .field .static {
+    font-size: 15px;
+    padding: 5px 2px;
+    border-bottom: 1.5px solid transparent;
+    color: var(--ink);
   }
 
   table.cargo {
@@ -221,34 +279,52 @@
     color: #fff;
   }
   #btnPdf:hover { background: var(--navy-dark); }
- 
+
   #logoutBtn {
     background: #fff;
     color: var(--navy);
     border: 1.5px solid var(--navy) !important;
   }
     #logoutBtn:hover { background: #f0efe9; }
-  .signatures {
+
+  .firma-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    padding-top: 10px;
+    gap: 28px;
   }
 
-  .sig-box {
-    border-top: 1px solid var(--ink);
-    padding-top: 6px;
-    font-size: 12.5px;
+  .firma-box {
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    min-height: 70px;
+    padding: 8px;
+  }
+
+  .aviso {
+    margin-top: 16px;
+    font-size: 12px;
     color: var(--steel);
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .rgpd {
+    margin-top: 10px;
+    font-size: 10.5px;
+    color: #8b93a0;
+    line-height: 1.4;
   }
 
   @media (max-width: 640px) {
-    .grid, .grid.tri { grid-template-columns: 1fr; }
-    header { flex-direction: column; }
-    header .doc-meta { text-align: left; }
-    .route { grid-template-columns: 1fr; }
-    .route .arrow { transform: rotate(90deg); }
+    .grid { grid-template-columns: 1fr; }
+    .header-top, .header-bottom { flex-direction: column; }
+    .logo-block { text-align: left; padding-top: 12px; }
+    .header-bottom > div:last-child { width: 100%; }
+    header h1, header .doc-meta { text-align: left; }
+    header .doc-meta input { text-align: left; }
+    .firma-row { grid-template-columns: 1fr; }
   }
 
   @media print {
@@ -264,67 +340,100 @@
 
 <div id="sheet">
   <header>
-    <h1>Albarán</h1>
-    <div class="doc-meta">
-      <div><label>Nº</label><input type="text" id="docNum" placeholder="A-0001"></div>
-      <div style="margin-top:6px;"><label>Fecha</label><input type="date" id="docFecha"></div>
+    <div class="header-top">
+      <div class="letterhead">
+        <strong>Brandes &amp; Loo, S.L.</strong>
+        Cif ES B45832425<br>
+        Calle Ciudad Real, 2 y 4<br>
+        45940 Valmojado - Toledo<br>
+        comercial@lookandloo.com · Tel 623 502 176
+      </div>
+      <div class="logo-block">
+        <div class="logo-text">LOOK<span>&amp;</span>LOO</div>
+        <div class="tagline">mobile toilets for special events®</div>
+      </div>
+    </div>
+
+    <div class="header-bottom">
+      <div class="client-block">
+        <div class="num-cliente">Nº cliente 928</div>
+        <strong>Dynamic Sport Management &amp; Consultancy, SL</strong><br>
+        Calle Gran Vía 69, 1º Oficina 101<br>
+        28013 Madrid<br>
+        N.I.F. B75689034
+      </div>
+      <div>
+        <h1>Albarán</h1>
+        <div class="doc-meta">
+          <div><label>Nº doc.</label><input type="text" id="docNum" placeholder="5619"></div>
+          <div style="margin-top:4px;"><label>Fecha</label><input type="date" id="docFecha"></div>
+        </div>
+      </div>
     </div>
   </header>
 
   <section>
-    <h2>Datos de la empresa</h2>
-    <div class="grid">
-      <div class="field"><label>Nombre / Razón social</label><input type="text" id="empNombre"></div>
-      <div class="field"><label>CIF / NIF</label><input type="text" id="empCif"></div>
-      <div class="field"><label>Dirección</label><input type="text" id="empDireccion"></div>
-      <div class="field"><label>Teléfono / Email</label><input type="text" id="empContacto"></div>
+    <h2>Datos de la carga</h2>
+    <div class="field" style="margin-bottom:14px;">
+      <label>Descripción del envío / Evento</label>
+      <strong>ALBARÁN DE CARGA DE MATERIAL: evento OPEN MADRID 2026</strong>
     </div>
-  </section>
-
-  <section>
-    <h2>Ruta</h2>
-    <div class="route">
-      <div class="field"><label>Dirección de partida</label><textarea id="direccionPartida" rows="2"></textarea></div>
-      <div class="arrow">→</div>
-      <div class="field"><label>Dirección de destino</label><textarea id="direccionDestino" rows="2"></textarea></div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Datos del camión</h2>
-    <div class="grid tri">
-      <div class="field"><label>Chofer</label><input type="text" id="chofer"></div>
-      <div class="field"><label>Matrícula camión</label><input type="text" id="matriculaCamion"></div>
-      <div class="field"><label>Matrícula remolque</label><input type="text" id="matriculaRemolque"></div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Carga</h2>
     <table class="cargo" id="cargoTable">
       <thead>
         <tr>
           <th style="width:80px;">Cant.</th>
-          <th>Módulo / concepto</th>
+          <th>Material</th>
           <th></th>
         </tr>
       </thead>
       <tbody id="cargoBody">
         <tr>
           <td class="qty"><input type="text" value="1"></td>
-          <td><input type="text" placeholder="Ej. Módulo Terra TE224"></td>
+          <td><input type="text" placeholder="Ej. Herramientas"></td>
           <td class="remove"><button onclick="removeRow(this)">✕</button></td>
         </tr>
       </tbody>
     </table>
     <button id="addRow" onclick="addRow()">+ Añadir línea</button>
+
+    <div class="grid" style="margin-top:18px;">
+      <div class="field"><label>Peso de la carga</label><input type="text" id="pesoCarga" placeholder="Ej. 800Kg aprox."></div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label>Dirección de servicio</label>
+        <div class="static">Club de Campo Villa de Madrid — Ctra. Castilla, km 2, Moncloa - Aravaca, 28040 Madrid</div>
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label>Coordenadas</label>
+        <div class="static">40°26'19.6"N 3°44'33.4"W (40.438779, -3.742623)</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Datos del transporte</h2>
+    <div class="grid" style="grid-template-columns: 1fr;">
+      <div class="field"><label>Chofer</label><input type="text" id="chofer"></div>
+      <div class="field"><label>Matrícula</label><input type="text" id="matricula" placeholder="Ej. IVECO 4051GSD"></div>
+      <div class="field"><label>Remolque</label><input type="text" id="remolque" ></div>
+    </div>
   </section>
 
   <section style="border-bottom:none;">
-    <h2>Firmas</h2>
-    <div class="signatures">
-      <div class="sig-box">Entrega (chofer)</div>
-      <div class="sig-box">Recibe (destino)</div>
+    <h2>Comentarios y firma</h2>
+    <div class="firma-row">
+      <div class="field"><label>Comentarios</label><textarea id="comentarios" rows="3"></textarea></div>
+      <div class="field">
+        <label>Firma cliente</label>
+        <div class="firma-box"></div>
+      </div>
+    </div>
+    <div class="aviso">
+      <span>Cualquier desperfecto ocasionado por un mal uso del sanitario, correrá por cuenta del cliente.</span>
+      <span>Teléfono de guardia: 673 333 535</span>
+    </div>
+    <div class="rgpd">
+      Los datos de carácter personal facilitados serán tratados por Brandes &amp; Loo S.L. con NIF B45832425 de acuerdo con lo dispuesto en el Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo,
+      de 27 de abril de 2016 relativo a la protección de las personas físicas en lo que respecta al tratamiento de datos personales y a la libre circulación de los mismos.
     </div>
   </section>
 
@@ -343,7 +452,7 @@
     const row = document.createElement('tr');
     row.innerHTML = `
       <td class="qty"><input type="text" value="1"></td>
-      <td><input type="text" placeholder="Ej. Módulo Oporto OP123"></td>
+      <td><input type="text" placeholder="Ej. Tableros de madera (varios)"></td>
       <td class="remove"><button onclick="removeRow(this)">✕</button></td>
     `;
     tbody.appendChild(row);
@@ -385,87 +494,64 @@
     doc.line(margenIzq, y, margenDer, y);
     y += 8;
 
-    // --- Datos de la empresa ---
+    // --- Proveedor / Cliente (datos fijos) ---
     doc.setFontSize(9);
     doc.setTextColor(90, 100, 110);
-    doc.text('DATOS DE LA EMPRESA', margenIzq, y);
+    doc.text('PROVEEDOR', margenIzq, y);
+    doc.text('CLIENTE', 110, y);
     y += 5;
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setTextColor(20, 25, 30);
     doc.setFont(undefined, 'bold');
-    doc.text(val('empNombre') || '-', margenIzq, y);
+    doc.text('Brandes & Loo, S.L. (Look&Loo)', margenIzq, y);
+    doc.text('Dynamic Sport Management & Consultancy, SL', 110, y, { maxWidth: 85 });
     doc.setFont(undefined, 'normal');
     y += 5;
-    doc.setFontSize(10);
-    doc.text(`CIF/NIF: ${val('empCif') || '-'}`, margenIzq, y);
+    doc.text('CIF ES B45832425', margenIzq, y);
+    doc.text('Nº cliente 928 · NIF B75689034', 110, y);
     y += 5;
-    doc.text(val('empDireccion') || '-', margenIzq, y);
+    doc.text('Calle Ciudad Real, 2 y 4', margenIzq, y);
+    doc.text('Calle Gran Vía 69, 1º Oficina 101', 110, y);
     y += 5;
-    doc.text(val('empContacto') || '-', margenIzq, y);
-    y += 9;
-
-    // --- Ruta ---
-    doc.setFontSize(9);
-    doc.setTextColor(90, 100, 110);
-    doc.text('DIRECCIÓN DE PARTIDA', margenIzq, y);
-    doc.text('DIRECCIÓN DE DESTINO', 110, y);
+    doc.text('45940 Valmojado - Toledo', margenIzq, y);
+    doc.text('28013 Madrid', 110, y);
     y += 5;
-    doc.setFontSize(10);
-    doc.setTextColor(20, 25, 30);
-    const partida = doc.splitTextToSize(val('direccionPartida') || '-', 85);
-    const destino = doc.splitTextToSize(val('direccionDestino') || '-', 85);
-    doc.text(partida, margenIzq, y);
-    doc.text(destino, 110, y);
-    y += Math.max(partida.length, destino.length) * 5 + 6;
-
-    doc.setLineWidth(0.2);
-    doc.line(margenIzq, y, margenDer, y);
-    y += 8;
-
-    // --- Datos del camión ---
-    doc.setFontSize(9);
-    doc.setTextColor(90, 100, 110);
-    doc.text('CHOFER', margenIzq, y);
-    doc.text('MATRÍCULA CAMIÓN', 85, y);
-    doc.text('MATRÍCULA REMOLQUE', 145, y);
-    y += 5;
-    doc.setFontSize(10.5);
-    doc.setTextColor(20, 25, 30);
-    doc.text(val('chofer') || '-', margenIzq, y);
-    doc.text(val('matriculaCamion') || '-', 85, y);
-    doc.text(val('matriculaRemolque') || '-', 145, y);
+    doc.text('comercial@lookandloo.com', margenIzq, y);
     y += 9;
 
     doc.setLineWidth(0.2);
     doc.line(margenIzq, y, margenDer, y);
     y += 8;
 
-    // --- Carga (tabla) ---
+    // --- Datos de la carga ---
     doc.setFontSize(9);
     doc.setTextColor(90, 100, 110);
-    doc.text('CANT.', margenIzq, y);
-    doc.text('MÓDULO / CONCEPTO', margenIzq + 18, y);
-    y += 2;
-    doc.setLineWidth(0.3);
-    doc.line(margenIzq, y, margenDer, y);
+    doc.text('DATOS DE LA CARGA', margenIzq, y);
     y += 6;
 
+    const evento = val('eventoTitulo');
+    if (evento) {
+      doc.setFontSize(10.5);
+      doc.setTextColor(20, 25, 30);
+      doc.setFont(undefined, 'bold');
+      const eventoLines = doc.splitTextToSize(evento, margenDer - margenIzq);
+      doc.text(eventoLines, margenIzq, y);
+      doc.setFont(undefined, 'normal');
+      y += eventoLines.length * 5 + 3;
+    }
+
     doc.setFontSize(10.5);
     doc.setTextColor(20, 25, 30);
-    doc.setFont(undefined, 'normal');
-
     const filas = document.querySelectorAll('#cargoBody tr');
     filas.forEach((fila) => {
       const inputs = fila.querySelectorAll('input');
-      const cantidad = inputs[0].value.trim() || '-';
+      const cantidad = inputs[0].value.trim();
       const concepto = inputs[1].value.trim();
-
       if (!concepto) return; // omite filas vacías
 
-      doc.text(cantidad, margenIzq, y);
-      doc.text(concepto || '-', margenIzq + 18, y);
-      doc.text(obs || '-', 130, y);
-      y += 7;
+      doc.text(cantidad || '-', margenIzq, y);
+      doc.text(concepto, margenIzq + 15, y);
+      y += 6;
 
       if (y > 260) {
         doc.addPage();
@@ -473,17 +559,94 @@
       }
     });
 
-    y += 8;
-    if (y > 250) { doc.addPage(); y = 20; }
+    const peso = val('pesoCarga');
+    if (peso) {
+      y += 1;
+      doc.text(`Peso carga: ${peso}`, margenIzq, y);
+      y += 6;
+    }
 
-    // --- Firmas ---
-    doc.setLineWidth(0.2);
-    doc.line(margenIzq, y + 20, 90, y + 20);
-    doc.line(120, y + 20, margenDer, y + 20);
+    const direccionServicio = 'Club de Campo Villa de Madrid — Ctra. Castilla, km 2, Moncloa - Aravaca, 28040 Madrid';
     doc.setFontSize(9);
     doc.setTextColor(90, 100, 110);
-    doc.text('Entrega (chofer)', margenIzq, y + 25);
-    doc.text('Recibe (destino)', 120, y + 25);
+    doc.text('DIRECCIÓN DE SERVICIO', margenIzq, y);
+    y += 5;
+    doc.setFontSize(10.5);
+    doc.setTextColor(20, 25, 30);
+    const dirLines = doc.splitTextToSize(direccionServicio, margenDer - margenIzq);
+    doc.text(dirLines, margenIzq, y);
+    y += dirLines.length * 5 + 3;
+
+    const coordenadas = '40°26\'19.6"N 3°44\'33.4"W (40.438779, -3.742623)';
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('COORDENADAS', margenIzq, y);
+    y += 5;
+    doc.setFontSize(10.5);
+    doc.setTextColor(20, 25, 30);
+    doc.text(coordenadas, margenIzq, y);
+    y += 8;
+
+    if (y > 250) { doc.addPage(); y = 20; }
+
+    doc.setLineWidth(0.2);
+    doc.line(margenIzq, y, margenDer, y);
+    y += 8;
+
+    // --- Datos del transporte ---
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('CHOFER', margenIzq, y);
+    y += 5;
+    doc.setFontSize(10.5);
+    doc.setTextColor(20, 25, 30);
+    doc.text(val('chofer') || '-', margenIzq, y);
+    y += 8;
+
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('MATRÍCULA', margenIzq, y);
+    y += 5;
+    doc.setFontSize(10.5);
+    doc.setTextColor(20, 25, 30);
+    doc.text(val('matricula') || '-', margenIzq, y);
+    y += 8;
+
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('REMOLQUE', margenIzq, y);
+    y += 5;
+    doc.setFontSize(10.5);
+    doc.setTextColor(20, 25, 30);
+    doc.text(val('remolque') || '-', margenIzq, y);
+    y += 10;
+
+    if (y > 250) { doc.addPage(); y = 20; }
+
+    doc.setLineWidth(0.2);
+    doc.line(margenIzq, y, margenDer, y);
+    y += 8;
+
+    // --- Comentarios / Firma ---
+    doc.setFontSize(9);
+    doc.setTextColor(90, 100, 110);
+    doc.text('COMENTARIOS', margenIzq, y);
+    doc.text('FIRMA CLIENTE', 130, y);
+    y += 5;
+    doc.setFontSize(10.5);
+    doc.setTextColor(20, 25, 30);
+    const comentarios = doc.splitTextToSize(val('comentarios') || '-', 105);
+    doc.text(comentarios, margenIzq, y);
+    doc.rect(130, y - 5, 50, 20);
+    y += Math.max(comentarios.length * 5, 20) + 6;
+
+    if (y > 255) { doc.addPage(); y = 20; }
+
+    doc.setFontSize(8);
+    doc.setTextColor(120, 128, 138);
+    doc.text('Cualquier desperfecto ocasionado por un mal uso del sanitario, correrá por cuenta del cliente.', margenIzq, y);
+    y += 4;
+    doc.text('Teléfono de guardia: 673 333 535', margenIzq, y);
 
     const nombreArchivo = `albaran-${docNum !== '—' ? docNum : 'sin-numero'}.pdf`;
 
@@ -521,7 +684,7 @@
     <button id="logoutBtn">Cerrar sesión</button>
   </header>
 
-  
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
