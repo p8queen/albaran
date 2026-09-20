@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Albarán</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #d9d9d9;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px;
+    background: #2b2b2b;
+  }
+  .toolbar button {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 6px;
+    background: #d4af37;
+    color: #1a1a1a;
+    cursor: pointer;
+  }
+  .toolbar button:hover { background: #c49f2c; }
+  .toolbar button:disabled { opacity: 0.6; cursor: default; }
+
+  .toolbar button.secondary {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid #d4af37;
+  }
+  .toolbar button.secondary:hover { background: rgba(212, 175, 55, 0.15); }
+
+  #sheet {
+    position: relative;
+    width: 595.5pt;
+    height: 842.25pt;
+    margin: 24px auto;
+    background: #ffffff;
+    box-shadow: 0 0 14px rgba(0,0,0,0.35);
+    color: #000;
+    overflow: hidden;
+  }
+
+  .t {
+    position: absolute;
+    white-space: pre;
+    line-height: 1.08;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .img-abs {
+    position: absolute;
+    display: block;
+  }
+
+  .line {
+    position: absolute;
+    border-top: 0.75pt solid #000;
+  }
+
+  .box {
+    position: absolute;
+    border: 0.75pt solid #000;
+  }
+
+  .line-flex {
+    position: absolute;
+    display: flex;
+    white-space: pre;
+    line-height: 1.08;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9.8pt;
+    font-weight: 400;
+  }
+
+  .editable {
+    cursor: text;
+    border-radius: 2px;
+  }
+  .editable:hover {
+    background: rgba(212, 175, 55, 0.15);
+  }
+  .editable:focus {
+    background: rgba(212, 175, 55, 0.22);
+    outline: 1px dashed #b8952e;
+  }
+
+  .row-remove {
+    position: absolute;
+    width: 12pt;
+    height: 12pt;
+    line-height: 10pt;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #c0392b;
+    color: #fff;
+    font-size: 9pt;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    cursor: pointer;
+  }
+  .row-remove:hover { background: #992d22; }
+
+  .row-add-btn {
+    position: absolute;
+    left: 68.2pt;
+    font-size: 7.5pt;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    padding: 1.5pt 6pt;
+    border: none;
+    border-radius: 3pt;
+    background: #d4af37;
+    color: #1a1a1a;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .row-add-btn:hover { background: #c49f2c; }
+
+  @media print {
+    .editable, .editable:hover, .editable:focus {
+      background: transparent !important;
+      outline: none !important;
+    }
+    .row-remove { display: none !important; }
+    .row-add-btn { display: none !important; }
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  @media print {
+    html, body { background: #fff; }
+    .toolbar { display: none !important; }
+    #sheet {
+      margin: 0;
+      box-shadow: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <button id="btnPdf" type="button">Generar PDF</button>
+    <button id="btnShare" type="button" class="secondary">Compartir</button>
+  </div>
+
+  <div id="sheet">
+
+    <!-- Imágenes -->
+    <img class="img-abs" style="left:173.25pt;top:43.75pt;width:234.75pt;height:81.75pt;" src="assets/logo.png" alt="Look&amp;Loo">
+    <img class="img-abs" style="left:407.25pt;top:118.00pt;width:7.50pt;height:7.50pt;" src="assets/reg.png" alt="">
+    <img class="img-abs" style="left:448.50pt;top:37.75pt;width:55.50pt;height:46.50pt;" src="assets/aenor-calidad.png" alt="AENOR Gestión de la Calidad ISO 9001">
+    <img class="img-abs" style="left:510.00pt;top:37.00pt;width:56.25pt;height:47.25pt;" src="assets/aenor-ambiental.png" alt="AENOR Gestión Ambiental ISO 14001">
+    <img class="img-abs" style="left:450.00pt;top:97.75pt;width:55.50pt;height:46.50pt;" src="assets/aenor-accesibilidad.png" alt="AENOR Accesibilidad Universal UNE 170001-1">
+    <img class="img-abs" style="left:511.50pt;top:94.75pt;width:55.50pt;height:55.50pt;" src="assets/iqnet.png" alt="IQNET Recognized Certification">
+
+    <!-- Líneas separadoras -->
+    <div class="line" style="left:28.5pt;top:280.75pt;width:552.75pt;"></div>
+    <div class="line" style="left:28.5pt;top:303.25pt;width:552.75pt;"></div>
+
+    <!-- Recuadro comentarios / firma -->
+    <div class="box" style="left:19.5pt;top:718.0pt;width:554.25pt;height:66.75pt;"></div>
+
+    <!-- Textos -->
+    <div class="t" style="left:33.80pt;top:158.10pt;width:52.50pt;height:8.20pt;font-size:8.20pt;font-weight:700;">Nº CLIENTE</div>
+    <div class="t" style="left:100.50pt;top:158.40pt;width:23.90pt;height:9.80pt;font-size:9.80pt;font-weight:400;">928</div>
+    <div class="t" style="left:383.20pt;top:174.60pt;width:116.80pt;height:21.80pt;font-size:21.80pt;font-weight:700;">ALBARÁN</div>
+    <div class="t" style="left:33.80pt;top:172.70pt;width:232.20pt;height:9.70pt;font-size:9.80pt;font-weight:700;">Dynamic Sport Management &amp; Consultancy, SL</div>
+    <div class="t" style="left:33.80pt;top:183.90pt;width:219.20pt;height:9.80pt;font-size:9.80pt;font-weight:400;">Dynamic Sport Management &amp; Consultancy, SL</div>
+    <div class="t" style="left:33.80pt;top:195.20pt;width:151.40pt;height:9.70pt;font-size:9.80pt;font-weight:400;">Calle Gran Vía 69, 1º Oficina 101</div>
+    <div class="t" style="left:33.80pt;top:206.40pt;width:69.20pt;height:9.80pt;font-size:9.80pt;font-weight:400;">28013 Madrid</div>
+    <div class="t" style="left:383.20pt;top:230.10pt;width:34.30pt;height:8.20pt;font-size:8.20pt;font-weight:700;">FECHA</div>
+    <div id="fechaValue" class="t editable" contenteditable="true" spellcheck="false" style="left:416.20pt;top:230.40pt;width:45.70pt;height:9.80pt;font-size:9.80pt;font-weight:400;">17/09/26</div>
+    <div class="t" style="left:33.80pt;top:237.60pt;width:26.70pt;height:8.20pt;font-size:8.20pt;font-weight:700;">N.I.F.</div>
+    <div class="t" style="left:90.00pt;top:237.90pt;width:56.90pt;height:9.80pt;font-size:9.80pt;font-weight:400;">B75689034</div>
+    <div class="t" style="left:384.00pt;top:215.80pt;width:69.90pt;height:8.30pt;font-size:8.20pt;font-weight:700;">Nº DOCUMENTO</div>
+    <div id="docNumValue" class="t editable" contenteditable="true" spellcheck="false" style="left:473.20pt;top:215.40pt;width:60pt;height:9.80pt;font-size:9.80pt;font-weight:400;">M-000000</div>
+    <div class="t" style="left:41.20pt;top:288.60pt;width:50.00pt;height:8.20pt;font-size:8.20pt;font-weight:700;">CANTIDAD</div>
+    <div class="t" style="left:124.50pt;top:288.60pt;width:62.00pt;height:8.20pt;font-size:8.20pt;font-weight:700;">DESCRIPCIÓN</div>
+    <div class="t" style="left:449.20pt;top:87.80pt;width:41.50pt;height:6.00pt;font-size:6.00pt;font-family:'Arial Narrow',Arial,sans-serif;font-weight:400;">ER 0023/2023</div>
+    <div class="t" style="left:511.50pt;top:88.60pt;width:41.50pt;height:6.00pt;font-size:6.00pt;font-family:'Arial Narrow',Arial,sans-serif;font-weight:400;">GA 2023/0008</div>
+    <div class="t" style="left:24.80pt;top:33.80pt;width:87.20pt;height:9.00pt;font-size:9.00pt;font-weight:400;">Brandes &amp; Loo, S.L</div>
+    <div class="t" style="left:24.80pt;top:53.10pt;width:95.00pt;height:8.20pt;font-size:8.20pt;font-weight:400;">Calle Ciudad Real, 2 y 4</div>
+    <div class="t" style="left:24.80pt;top:63.60pt;width:101.80pt;height:8.20pt;font-size:8.20pt;font-weight:400;">45940 Valmojado - Toledo</div>
+    <div class="t" style="left:24.80pt;top:73.30pt;width:107.10pt;height:8.30pt;font-size:8.20pt;font-weight:400;">comercial@lookandloo.com</div>
+    <div class="t" style="left:24.80pt;top:83.10pt;width:65.80pt;height:8.20pt;font-size:8.20pt;font-weight:400;">Tel 623 502 176</div>
+    <div class="t" style="left:24.80pt;top:44.10pt;width:73.30pt;height:8.20pt;font-size:8.20pt;font-weight:400;">Cif ES B45832425</div>
+    <div class="t" style="left:450.80pt;top:148.60pt;width:40.70pt;height:6.00pt;font-size:6.00pt;font-family:'Arial Narrow',Arial,sans-serif;font-weight:400;">AE-0001/2023</div>
+    <div class="t" style="left:90.80pt;top:322.70pt;width:312.20pt;height:9.70pt;font-size:9.80pt;font-weight:700;">ALBARÁN DE CARGA DE MATERIAL: evento OPEN MADRID 2026</div>
+    <!-- Filas de carga (generadas por JS) -->
+    <div id="rowsContainer"></div>
+
+    <div id="pesoCarga" class="line-flex" style="left:90.80pt;">
+      <span>Peso carga: </span><span id="pesoCargaValue" class="editable" contenteditable="true" spellcheck="false">800</span><span>Kg aprox.</span>
+    </div>
+    <div id="dirServicio" class="t" style="left:90.80pt;width:99.90pt;font-size:9.80pt;font-weight:400;text-decoration:underline;">Dirección de servicio:</div>
+    <div id="clubCampo" class="t" style="left:90.80pt;width:200pt;font-size:9.80pt;font-weight:400;">Club de Campo Villa de Madrid</div>
+    <div id="ctraCastilla" class="t" style="left:90.80pt;width:300pt;font-size:9.80pt;font-weight:400;">Ctra. Castilla, km 2, Moncloa - Aravaca, 28040 Madrid</div>
+    <div id="coordenadas" class="t" style="left:90.80pt;width:70.70pt;font-size:9.80pt;font-weight:400;text-decoration:underline;">Coordenadas:</div>
+    <div id="latlong1" class="t" style="left:90.80pt;width:150pt;font-size:9.80pt;font-weight:400;">40°26'19.6"N 3°44'33.4"W</div>
+    <div id="latlong2" class="t" style="left:90.80pt;width:150pt;font-size:9.80pt;font-weight:400;">40.438779, -3.742623</div>
+
+    <div id="matriculaLine" class="line-flex" style="left:90.80pt;">
+      <span>Matricula: </span><span id="matriculaValue" class="editable" contenteditable="true" spellcheck="false">IVECO 4051GSD</span>
+    </div>
+    <div id="remolqueLine" class="line-flex" style="left:90.80pt;">
+      <span>Nº Remolque: </span><span id="remolqueValue" class="editable" contenteditable="true" spellcheck="false">RT 4021 </span>
+    </div>
+    <div id="conductorLine" class="line-flex" style="left:90.80pt;">
+      <span>Conductor: </span><span id="conductorValue" class="editable" contenteditable="true" spellcheck="false">Matías</span>
+    </div>
+
+    <div id="box" class="box" style="left:19.5pt;width:554.25pt;height:66.75pt;"></div>
+    <div id="comentariosLabel" class="t" style="left:24.80pt;width:74.70pt;font-size:9.00pt;font-weight:700;">COMENTARIOS:</div>
+    <div id="firmaLabel" class="t" style="left:393.80pt;width:74.70pt;font-size:9.00pt;font-weight:700;">FIRMA CLIENTE:</div>
+    <div id="disclaimer" class="t" style="left:22.50pt;width:397.30pt;font-size:8.20pt;font-weight:700;">Cualquier desperfecto ocasionado por un mal uso del sanitario, correrá por cuenta del cliente.</div>
+    <div id="telefonoGuardia" class="t" style="left:426.00pt;width:149.10pt;font-size:8.20pt;font-weight:700;">TELÉFONO DE GUARDIA: 673 333 535</div>
+    <div id="legal1" class="t" style="left:24.80pt;width:528.90pt;font-size:6.00pt;font-family:'Arial Narrow',Arial,sans-serif;font-weight:400;">Los datos de carácter personal facilitados serán tratados por Brandes &amp; Loo S.L. con NIF B45832425 de acuerdo con lo dispuesto en el Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo, de 27 de abril de 2016</div>
+    <div id="legal2" class="t" style="left:24.80pt;width:316.80pt;font-size:6.00pt;font-family:'Arial Narrow',Arial,sans-serif;font-weight:400;">relativo a la protección de las personas físicas en lo que respecta al tratamiento de datos personales y a la libre circulación de los mismos.</div>
+
+  </div>
+
+  <!-- Copias en base64 de logos/insignias, y librerías para exportar el recuadro a PDF al compartir -->
+  <script src="assets/pdf-assets.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    var ROW_START_Y = 348.8;   // top del texto de la primera fila
+    var ROW_HEIGHT  = 13.5;    // separación vertical entre filas
+    var GAP_AFTER_ROWS = 12.9; // hueco fijo entre la última fila y "Peso carga"
+
+    // Deltas fijos (en pt) de cada elemento respecto a la posición de "Peso carga"
+    var AFTER = [
+      { id: 'pesoCarga',        top: 0 },
+      { id: 'dirServicio',      top: 26.2 },
+      { id: 'clubCampo',        top: 40.5 },
+      { id: 'ctraCastilla',     top: 54.7 },
+      { id: 'coordenadas',      top: 69.0 },
+      { id: 'latlong1',         top: 83.2 },
+      { id: 'latlong2',         top: 96.7 },
+      { id: 'matriculaLine',    top: 123.0 },
+      { id: 'remolqueLine',     top: 137.2 },
+      { id: 'conductorLine',    top: 151.4 },
+      { id: 'box',              top: 343.5 },
+      { id: 'comentariosLabel', top: 347.8 },
+      { id: 'firmaLabel',       top: 348.5 },
+      { id: 'disclaimer',       top: 398.6 },
+      { id: 'telefonoGuardia',  top: 398.6 },
+      { id: 'legal1',           top: 412.3 },
+      { id: 'legal2',           top: 419.1 }
+    ];
+
+    var rows = [
+      { cantidad: '1', descripcion: 'Herramientas' },
+      { cantidad: '1', descripcion: 'Tableros de madera  ( varios )' }
+    ];
+
+    function preventEnter(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        e.target.blur();
+      }
+    }
+
+    function renderRows() {
+      var container = document.getElementById('rowsContainer');
+      container.innerHTML = '';
+
+      rows.forEach(function (row, i) {
+        var y = ROW_START_Y + i * ROW_HEIGHT;
+
+        var cant = document.createElement('div');
+        cant.className = 't editable';
+        cant.contentEditable = 'true';
+        cant.spellcheck = false;
+        cant.style.cssText = 'left:68.2pt;top:' + y + 'pt;width:20pt;font-size:9.8pt;font-weight:400;';
+        cant.textContent = row.cantidad;
+        cant.addEventListener('input', function () { row.cantidad = cant.textContent; });
+        cant.addEventListener('keydown', preventEnter);
+        container.appendChild(cant);
+
+        var desc = document.createElement('div');
+        desc.className = 't editable';
+        desc.contentEditable = 'true';
+        desc.spellcheck = false;
+        desc.style.cssText = 'left:90.8pt;top:' + y + 'pt;width:440pt;font-size:9.8pt;font-weight:400;';
+        desc.textContent = row.descripcion;
+        desc.addEventListener('input', function () { row.descripcion = desc.textContent; });
+        desc.addEventListener('keydown', preventEnter);
+        container.appendChild(desc);
+
+        if (rows.length > 1) {
+          var rm = document.createElement('button');
+          rm.type = 'button';
+          rm.className = 'row-remove';
+          rm.textContent = '×';
+          rm.title = 'Eliminar fila';
+          rm.style.left = '564pt';
+          rm.style.top = (y - 1.5) + 'pt';
+          rm.addEventListener('click', function () {
+            rows.splice(i, 1);
+            renderRows();
+          });
+          container.appendChild(rm);
+        }
+      });
+
+      var addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.className = 'row-add-btn';
+      addBtn.textContent = '+ Añadir fila';
+      addBtn.style.top = (ROW_START_Y + rows.length * ROW_HEIGHT + 1.5) + 'pt';
+      addBtn.addEventListener('click', function () {
+        rows.push({ cantidad: '1', descripcion: '' });
+        renderRows();
+      });
+      container.appendChild(addBtn);
+
+      relayout();
+    }
+
+    function relayout() {
+      var pesoCargaY = ROW_START_Y + rows.length * ROW_HEIGHT + GAP_AFTER_ROWS;
+      AFTER.forEach(function (item) {
+        var el = document.getElementById(item.id);
+        if (el) el.style.top = (pesoCargaY + item.top) + 'pt';
+      });
+    }
+
+    document.getElementById('btnPdf').addEventListener('click', function () {
+      window.print();
+    });
+
+    ['matriculaValue', 'remolqueValue', 'conductorValue', 'docNumValue', 'fechaValue', 'pesoCargaValue'].forEach(function (id) {
+      document.getElementById(id).addEventListener('keydown', preventEnter);
+    });
+
+    function buildAlbaranPdfFile() {
+      var sheet = document.getElementById('sheet');
+      return html2canvas(sheet, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        onclone: function (clonedDoc) {
+          clonedDoc.querySelectorAll('.row-remove').forEach(function (b) {
+            b.style.display = 'none';
+          });
+          clonedDoc.querySelectorAll('.editable').forEach(function (el) {
+            el.style.background = 'transparent';
+            el.style.outline = 'none';
+          });
+          clonedDoc.querySelectorAll('img').forEach(function (img) {
+            var src = img.getAttribute('src');
+            if (window.PDF_IMAGE_DATA && PDF_IMAGE_DATA[src]) {
+              img.src = PDF_IMAGE_DATA[src];
+            }
+          });
+          var clonedSheet = clonedDoc.getElementById('sheet');
+          if (clonedSheet) clonedSheet.style.boxShadow = 'none';
+        }
+      }).then(function (canvas) {
+        var imgData = canvas.toDataURL('image/jpeg', 0.95);
+        var pdf = new jspdf.jsPDF({ unit: 'pt', format: [595.5, 842.25] });
+        pdf.addImage(imgData, 'JPEG', 0, 0, 595.5, 842.25);
+        var blob = pdf.output('blob');
+        return new File([blob], 'albaran.pdf', { type: 'application/pdf' });
+      });
+    }
+
+    document.getElementById('btnShare').addEventListener('click', function () {
+      var btn = this;
+      var original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Generando...';
+
+      buildAlbaranPdfFile().then(function (file) {
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          return navigator.share({
+            files: [file],
+            title: 'Albarán',
+            text: 'Albarán de carga de material'
+          });
+        }
+        var url = URL.createObjectURL(file);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'albaran.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+        alert('Tu navegador no permite compartir archivos directamente. Se descargó el PDF: adjúntalo manualmente en WhatsApp, email, etc.');
+      }).catch(function (err) {
+        if (err && err.name !== 'AbortError') {
+          alert('No se pudo generar el PDF para compartir: ' + err.message);
+        }
+      }).finally(function () {
+        btn.disabled = false;
+        btn.textContent = original;
+      });
+    });
+
+    function setDefaultDocNumber() {
+      var d = new Date();
+      var pad2 = function (n) { return (n < 10 ? '0' : '') + n; };
+      var yy = pad2(d.getFullYear() % 100);
+      var mm = pad2(d.getMonth() + 1);
+      var dd = pad2(d.getDate());
+      document.getElementById('docNumValue').textContent = 'M-' + yy + mm + dd;
+    }
+
+    setDefaultDocNumber();
+    renderRows();
+  </script>
+
+</body>
+</html>
