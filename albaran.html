@@ -360,7 +360,7 @@
         useCORS: true,
         backgroundColor: '#ffffff',
         onclone: function (clonedDoc) {
-          clonedDoc.querySelectorAll('.row-remove').forEach(function (b) {
+          clonedDoc.querySelectorAll('.row-remove, .row-add-btn').forEach(function (b) {
             b.style.display = 'none';
           });
           clonedDoc.querySelectorAll('.editable').forEach(function (el) {
