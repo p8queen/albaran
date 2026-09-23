@@ -427,7 +427,17 @@
       document.getElementById('docNumValue').textContent = 'M-' + yy + mm + dd;
     }
 
+    function setDefaultFecha() {
+      var d = new Date();
+      var pad2 = function (n) { return (n < 10 ? '0' : '') + n; };
+      var dd = pad2(d.getDate());
+      var mm = pad2(d.getMonth() + 1);
+      var yy = pad2(d.getFullYear() % 100);
+      document.getElementById('fechaValue').textContent = dd + '/' + mm + '/' + yy;
+    }
+
     setDefaultDocNumber();
+    setDefaultFecha();
     renderRows();
   </script>
 
